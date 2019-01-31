@@ -57,6 +57,10 @@ enableEmoji = true  # Shorthand emojis in content files - https://gohugo.io/func
     name = "github"
     url = "https://github.com/dlespiau"
 
+  [[params.social]]
+    name = "email"
+    url = "mailto:damien.lespiau@gmail.com"
+
 [menu]
 
   [[menu.main]]
