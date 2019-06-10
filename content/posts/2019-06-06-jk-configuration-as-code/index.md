@@ -172,7 +172,7 @@ spec:
         service: billing
       expr: |-
         rate(http_request_total{job=billing,code=~"5.."}[2m])
-            / rate(http_request_duration_seconds_count{job=billing[2m]) * 100 > 10
+            / rate(http_request_duration_seconds_count{job=billing}[2m]) * 100 > 10
       for: 5m
       labels:
         severity: critical
@@ -182,10 +182,9 @@ spec:
 {{< /tabs >}}
 
 What's interesting to me is that such an approach shifts writing
-configuration file to be a familiar API problem: developers in charge of the
+configuration files to be a familiar API problem: developers in charge of the
 platform get to choose what they want to present to their users, can encode
-best practices and hide details of their their Kubernetes cluster in a
-library.
+best practices and hide details of their Kubernetes cluster in a library.
 
 For the curious minds, the `jk` script used to generate these Kubernetes
 objects can be found in the [jk repository][jk-micro-service].
@@ -204,11 +203,11 @@ is neither scalable nor maintainable.
 
 To be more concrete, let's take can a couple of examples:
 
-- A moderately sized Kubernetes cluster can easily hundreds of objects
-expressed as YAML files. Imagine scaling this both vertically (dev, staging,
-prod clusters) and horizontally (many clusters). It's natural to be wanting
-to share the common configuration between those clusters definitions and have
-well defined ways to make this configuration evolve over time.
+- A moderately sized Kubernetes cluster can easily be hundreds of objects
+expressed as YAML files. Imagine scaling this both vertically (dev, staging
+and prod clusters) and horizontally (many clusters). It's natural to be
+wanting to share the common configuration between those clusters definitions
+and have well defined ways to make this configuration evolve over time.
 
 - For organizations using micro-services, very quickly the need arises to
 abstract away or factorize the full extend of what it means to be a service
@@ -221,7 +220,7 @@ generation step.
 Many attempts have been made to solve this, often siloed to a particular
 piece of software: [Ansible][ansible] comes with a [full programming
 language][ansible-playbooks] embed as YAML constructs, [Hiera][hiera]
-implements object merging for Puppet and even YAML itself has [anchors and
+implements object merging for Puppet, even YAML itself has [anchors and
 references][yaml-aliases] to reduce duplication. More interestingly, domain
 specific languages have appeared in recent years such as [jsonnet][jsonnet]
 or [Dhall][dhall] (and its [Kubernetes support][dhall-kubernetes]).
@@ -238,7 +237,7 @@ management discussion. It offers a different take on existing solutions:
 - **`jk` is a generation tool**. We believe in a strict separation of
 configuration data and how that data is being used. For instance we do not
 take an opinionated view on how you should deploy applications to a cluster
-and leave that design choice between your hands. In a sense, `jk` is a pure
+and leave that design choice in your hands. In a sense, `jk` is a pure
 function transforming a set of input into configuration files.
 
 - **`jk` uses a general purpose language**: javascript. The configuration
@@ -258,8 +257,8 @@ environment variables nor read file anywhere on the filesystem with `jk`.
 
 - **`jk` is fast!** By being an embedded DSL and using v8 under the hood,
 we're significantly faster than the usual interpreters powering DSLs. For
-instance the go jsonnet interpreter is taking 7-8s to render the prometheus
-operator Kubernetes objects on my machine!
+instance the go jsonnet interpreter is taking 7-8s to render the [Prometheus
+operator][prom-operator] Kubernetes objects on my machine!
 
 ## Hello, World!
 
@@ -320,6 +319,7 @@ The runtime and its standard library offers core features:
 - Generate YAML, JSON, HCL and text files from Javascript objects.
 - Read YAML and JSON files as Javascript objects.
 - Serialization/deserialization of js objects to/from strings.
+- Merge javascript objects.
 - [Input parameters](https://jkcfg.github.io/#/documentation/std-param).
 - [List directories and files](https://jkcfg.github.io/#/documentation/std-fs).
 - [Logging facilities](https://jkcfg.github.io/#/documentation/std-log).
@@ -350,14 +350,14 @@ configuration, it can certainly be used for text templating.
 
 ## Status and Future work
 
-Albeit being still young, We believe `jk` is already useful enough to be a
-contender in the space. There's a lot of space
+Albeit being still young, we believe `jk` is already useful enough to be a
+contender in the space. There's a lot of room for improvement though:
 
 - **Helm integration**: we'd like `jk` to be able to render Helm charts
-client side and exposed as js objects for further manipulation.
+client side and expose the result as js objects for further manipulation.
 - **Jsonnet integration**: similarly, it should be possible to consume
 existing jsonnet programs.
-- **Native TypeScript support**: Currently developers need to run the `tsc`
+- **Native TypeScript support**: currently developers need to run the `tsc`
 transpiler by hand. We should be able to make `jk` consume TypeScript files
 natively a la [deno][deno].
 - **Kubernetes strategic merging**: the merging primitives are currently
@@ -368,7 +368,7 @@ standard library to implement Kubernetes [strategic merging][k8s-merge].
 for the Prometheus operator, ...
 - Produce **more examples**: it's easy to feel a bit overwhelmed when facing
 a new language and paradigm. More examples should hopefully be useful to make
-the discovery of `jk` easier.
+`jk` more approachable.
 
 ## Try it yourself!
 
