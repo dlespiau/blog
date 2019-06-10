@@ -382,6 +382,7 @@ small amount of) [`examples`][jk-examples].
 
 [ansible]: https://www.ansible.com/
 [ansible-playbooks]: https://docs.ansible.com/ansible/latest/user_guide/playbooks.html#
+[bok]: https://queue.acm.org/detail.cfm?id=2898444
 [dap]: https://github.com/kubernetes/community/blob/master/contributors/design-proposals/architecture/declarative-application-management.md
 [deno]: https://github.com/denoland/deno
 [dhall]: https://github.com/dhall-lang/dhall-lang
@@ -403,4 +404,3 @@ small amount of) [`examples`][jk-examples].
 [k8s-openapi-spec]: https://github.com/kubernetes/kubernetes/tree/master/api/openapi-spec
 [prom-operator]: https://github.com/coreos/prometheus-operator
 [yaml-aliases]: https://medium.com/@kinghuang/docker-compose-anchors-aliases-extensions-a1e4105d70bd
-[bok]: https://queue.acm.org/detail.cfm?id=2898444
