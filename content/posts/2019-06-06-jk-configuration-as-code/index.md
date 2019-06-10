@@ -368,8 +368,8 @@ natively a la [deno][deno].
 quite basic and we'd like to extend the object merging capabilities of the
 standard library to implement Kubernetes [strategic merging][k8s-merge].
 - Expose **typing generation for `CustomResources`**.
-- More **helper libraries** to generate Grafana dashboards, custom resource for
-the Prometheus operator, ...
+- More **helper libraries** to generate Grafana dashboards, custom resources
+for the Prometheus operator, ...
 - Produce **more examples**: it's easy to feel a bit overwhelmed when facing
 a new language and paradigm. More examples should hopefully be useful to make
 the discovery of `jk` easier.
