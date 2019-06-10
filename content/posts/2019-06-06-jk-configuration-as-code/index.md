@@ -339,6 +339,27 @@ Spec][k8s-openapi-spec] (`@jkcfg/kubernetes/api`).
 
 ## Typing with TypeScript
 
+The main reason to use a general purpose language is to benefit from its
+ecosystem. With javascript we can leverage typing systems such as
+[TypeScript][typescript] or [flow][flow] to help authoring configuration.
+
+Types help in a number of ways, including when refactoring large amounts of
+code or defining and documenting APIs. I'd also like to show it helps at
+authoring time by providing context-aware auto-completion:
+
+![Types - autocompletion](types-autocompletion.png)
+
+In the screenshot above we're defining a container in a `Deployment` and the
+IDE only offers the fields that are valid here along with the accompanying
+type and documentation.
+
+Similarly, typing can provide some level of validation:
+
+![Types - autocompletion](types-validation.png)
+
+Here, the IDE is telling us we haven't quite defined a valid `apps/v1`
+`Deployment`. We are missing the mandatory `selector` field.
+
 ## Templating vs object merging
 
 ## Text templating
@@ -383,6 +404,7 @@ small amount of) [`examples`][jk-examples].
 [deno]: https://github.com/denoland/deno
 [dhall]: https://github.com/dhall-lang/dhall-lang
 [dhall-kubernetes]: https://github.com/dhall-lang/dhall-kubernetes
+[flow]: https://flow.org/
 [hiera]: https://wikitech.wikimedia.org/wiki/Puppet_Hiera
 [jk]: https://github.com/jkcfg/jk
 [jk-alice]: https://github.com/jkcfg/jk/tree/master/examples/quick-start/alice
@@ -399,4 +421,5 @@ small amount of) [`examples`][jk-examples].
 [k8s-merge]: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md
 [k8s-openapi-spec]: https://github.com/kubernetes/kubernetes/tree/master/api/openapi-spec
 [prom-operator]: https://github.com/coreos/prometheus-operator
+[typescript]: https://www.typescriptlang.org/
 [yaml-aliases]: https://medium.com/@kinghuang/docker-compose-anchors-aliases-extensions-a1e4105d70bd
