@@ -181,10 +181,6 @@ spec:
   {{% /tab %}}
 {{< /tabs >}}
 
-Building on this example, one can imagine encoding a lot more in the high
-level micro-service definition: Grafana dashboards, Prometheus alerts and
-scrape configuration, horizontal pod auto-scaler configuration, ...
-
 What's interesting to me is that such an approach shifts writing
 configuration file to be a familiar API problem: developers in charge of the
 platform get to choose what they want to present to their users, can encode
