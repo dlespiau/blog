@@ -18,7 +18,7 @@ language makes writing configuration easier and more maintainable by allowing
 developers to think at a higher level.
 
 For instance, let's pretend we want to deploy a `billing` micro-service on a
-Kubernetes cluster. The micro-service could be defined asq:
+Kubernetes cluster. The micro-service could be defined as:
 
 ```yaml
 service:
