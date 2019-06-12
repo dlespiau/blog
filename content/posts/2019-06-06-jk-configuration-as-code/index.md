@@ -39,7 +39,7 @@ service:
     - service.RPS.HTTP.HighErrorRate
 ```
 
-From this simple, reduced definition of what is a micro-service, we can
+From this simple, reduced definition of what a micro-service is, we can
 generate:
 
 - Kubernetes `Namespace`, `Deployment`, `Service` and `Ingress` objects.
@@ -194,7 +194,7 @@ hide details in library code.
 For the curious minds, the `jk` script used to generate these Kubernetes
 objects can be found in the [jk repository][jk-micro-service].
 
-## `jk` - Built for configuration
+## Built for configuration
 
 We're building [`jk`][jk] in an attempt to advance the configuration
 management discussion. It offers a different take on existing solutions:
@@ -302,7 +302,8 @@ The IDE is telling us we haven't quite defined a valid `apps/v1`
 ## Status and Future work
 
 Albeit being still young, we believe `jk` is already useful enough to be a
-contender in the space. There's a lot of room for improvement though:
+contender in the space. There's definitely a lot of room for improvement
+though:
 
 - **Helm integration**: we'd like `jk` to be able to render Helm charts
 client side and expose the result as js objects for further manipulation.
@@ -311,21 +312,21 @@ existing jsonnet programs.
 - **Native TypeScript support**: currently developers need to run the `tsc`
 transpiler by hand. We should be able to make `jk` consume TypeScript files
 natively a la [deno][deno].
-- **Kubernetes strategic merging**: the merging primitives are currently
-quite basic and we'd like to extend the object merging capabilities of the
-standard library to implement Kubernetes [strategic merging][k8s-merge].
-- Expose **typing generation for `CustomResources`**.
+- **Kubernetes strategic merging**: the object merging primitives are
+currently quite basic and we'd like to extend the object merging capabilities
+of the standard library to implement Kubernetes [strategic
+merging][k8s-merge].
+- Expose **type generation for Kubernetes custom resources**.
 - More **helper libraries** to generate Grafana dashboards, custom resources
 for the Prometheus operator, ...
 - Produce **more examples**: it's easy to feel a bit overwhelmed when facing
-a new language and paradigm. More examples should hopefully be useful to make
-`jk` more approachable.
+a new language and paradigm. More examples would make `jk` more approachable.
 
 ## Try it yourself!
 
 It's easy to download `jk` from the [github release page][jk-releases] and
 [try it yourself][jk-quickstart]. You can also peruse through the (currently
-small amount of) [`examples`][jk-examples].
+small amount of) [examples][jk-examples].
 
 [ansible]: https://www.ansible.com/
 [ansible-playbooks]: https://docs.ansible.com/ansible/latest/user_guide/playbooks.html#
