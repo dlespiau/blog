@@ -1,7 +1,7 @@
 +++
 title = "jk - Configuration as code with TypeScript"
-date = 2019-05-19T10:21:00Z
-updated = 2019-05-19T10:21:00Z
+date = 2019-06-12T10:21:00Z
+updated = 2019-06-12T10:21:00Z
 tags = ["jk", "configuration", "go", "javascript", "typescript"]
 [author]
   name = "Damien Lespiau"
@@ -12,13 +12,16 @@ tags = ["jk", "configuration", "go", "javascript", "typescript"]
 > configurations** — [Borg, Omega, and Kubernetes - Lessons learned from three
 > container-management systems over a decade][bok]  
 
-**tl;dr**: [`jk`][jk] is a javascript runtime tailored for writing
-configuration files. The abstraction and expressive power of a programming
-language makes writing configuration easier and more maintainable by allowing
-developers to think at a higher level.
+This post is the first of a series introducing [`jk`][jk]. We will start the
+series by showing a concrete example of what [`jk`][jk] can do for you.
 
-For instance, let's pretend we want to deploy a `billing` micro-service on a
-Kubernetes cluster. The micro-service could be defined as:
+[`jk`][jk] is a javascript runtime tailored for writing configuration files.
+The abstraction and expressive power of a programming language makes writing
+configuration easier and more maintainable by allowing developers to think at
+a higher level.
+
+Let's pretend we want to deploy a `billing` micro-service on a Kubernetes
+cluster. This micro-service could be defined as:
 
 ```yaml
 service:
@@ -36,12 +39,13 @@ service:
     - service.RPS.HTTP.HighErrorRate
 ```
 
-From this definition, we can generate:
+From this simple, reduced definition of what is a micro-service, we can
+generate:
 
 - Kubernetes `Namespace`, `Deployment`, `Service` and `Ingress` objects.
 - A `ConfigMap` with dashboard definitions that grafana can detect and load.
-- Alerts for Prometheus using the `PrometheusRule` `CustomResource` defined
-  by the [PrometheusOperator][prom-operator].
+- Alerts for Prometheus using the `PrometheusRule` custom resource defined
+  by the [Prometheus operator][prom-operator].
 
 {{< tabs >}}
   {{% tab title="billing-ns.yaml" %}}
@@ -182,56 +186,17 @@ spec:
 {{< /tabs >}}
 
 What's interesting to me is that such an approach shifts writing
-configuration files to be a familiar API problem: developers in charge of the
-platform get to choose what they want to present to their users, can encode
-best practices and hide details of their Kubernetes cluster in a library.
+configuration files from a big flat soup of properties to a familiar API
+problem: developers in charge of the platform get to define the high level
+objects they want to present to their users, can encode best practices and
+hide details in library code.
 
 For the curious minds, the `jk` script used to generate these Kubernetes
 objects can be found in the [jk repository][jk-micro-service].
 
-## The configuration problem
-
-From where I sit, all I can see is a sea of configuration files: Kubernetes
-objects, Ansible playbooks, Terraform HCL, CloudFormation templates,
-Dockerfiles, travis and circle CI task definitions, ... They are all more or
-less structured, often akin to objects with properties (string → any maps
-really) with YAML or JSON as textual representation.
-
-Over the years, a lingering feeling has arisen, exacerbated by the arrival of
-Kubernetes: exposing this amount of configuration without abstraction power
-is neither scalable nor maintainable.
-
-To be more concrete, let's take can a couple of examples:
-
-- A moderately sized Kubernetes cluster can easily be hundreds of objects
-expressed as YAML files. Imagine scaling this both vertically (dev, staging
-and prod clusters) and horizontally (many clusters). It's natural to be
-wanting to share the common configuration between those clusters definitions
-and have well defined ways to make this configuration evolve over time.
-
-- For organizations using micro-services, very quickly the need arises to
-abstract away or factorize the full extend of what it means to be a service
-and use a high level definition from which can be derived the details. To
-stay concrete if we have `billing` service offering an API on port `80`, we
-don't need much more information than that to deploy the service to a
-Kubernetes cluster and can encode the details of what it means in a
-generation step.
-
-Many attempts have been made to solve this, often siloed to a particular
-piece of software: [Ansible][ansible] comes with a [full programming
-language][ansible-playbooks] embed as YAML constructs, [Hiera][hiera]
-implements object merging for Puppet, even YAML itself has [anchors and
-references][yaml-aliases] to reduce duplication. More interestingly, domain
-specific languages have appeared in recent years such as [jsonnet][jsonnet]
-or [Dhall][dhall] (and its [Kubernetes support][dhall-kubernetes]).
-
-Instead of going into too many details about the problem space here, I'll
-refer to the eloquently written [Declarative Application Management in
-Kubernetes][k8s-declarative] by Brian Grant.
-
 ## `jk` - Built for configuration
 
-So we're building [`jk`][jk] in an attempt to help advance the configuration
+We're building [`jk`][jk] in an attempt to advance the configuration
 management discussion. It offers a different take on existing solutions:
 
 - **`jk` is a generation tool**. We believe in a strict separation of
@@ -240,25 +205,31 @@ take an opinionated view on how you should deploy applications to a cluster
 and leave that design choice in your hands. In a sense, `jk` is a pure
 function transforming a set of input into configuration files.
 
+- **`jk` is cross domain**. `jk` generates JSON, YAML, [HCL][hcl] as well as
+plain text files. It allows the generation of cross-domain configuration. In
+the micro-service example above, grafana dashboards and Kubernetes
+objects are part of two different domains that are usually treated
+differently. We could augment the example further by defining a list of AWS
+resources needed for that service to operate (eg. an RDS instance) as
+[Terraform][terraform] HCL.
+
 - **`jk` uses a general purpose language**: javascript. The configuration
 domain attracts a lot of people interested in languages and the result is
 many new Domain Specific Languages (DSLs). We do not believe those new
 languages offer more expressive power than javascript and their tooling is
-generally lagging behind: unit test frameworks, linters, refactoring tools,
-IDE support, static typing, libraries, ...
+generally lagging behind. With a widely used general purpose language, we get
+many things for free: unit test frameworks, linters, api documentation,
+refactoring tools, IDE support, static typing, ecosystem of libraries, ...
 
-- **`jk` is hermetic**. Hermeticity as [defined by
-jsonnet][jsonnet-hermeticity] is the property to produce the same output
-given the same input no matter the machine the program is being run on. This
-seems like a great property for a tool generating configuration files. We
-achieve this with a custom v8-based runtime exposing as little as possible
-from the underlying OS. For instance you cannot access the process
+- **`jk` is hermetic**. Hermeticity is the property to produce the same
+output given the same input no matter the machine the program is being run
+on. This seems like a great property for a tool generating configuration
+files. We achieve this with a custom v8-based runtime exposing as little as
+possible from the underlying OS. For instance you cannot access the process
 environment variables nor read file anywhere on the filesystem with `jk`.
 
 - **`jk` is fast!** By being an embedded DSL and using v8 under the hood,
-we're significantly faster than the usual interpreters powering DSLs. For
-instance the go jsonnet interpreter is taking 7-8s to render the [Prometheus
-operator][prom-operator] Kubernetes objects on my machine!
+we're significantly faster than the usual interpreters powering DSLs.
 
 ## Hello, World!
 
@@ -305,38 +276,6 @@ monitors: 2
 name: Alice
 ```
 
-## Libraries
-
-`jk` separates a generic runtime and its standard library (`@jkcfg/std`) from
-domain specific libraries. For instance the [Kubernetes
-library][jk-kubernetes] (`@jkcfg/kubernetes`) offer facilities to create
-Kubernetes objects.
-
-The runtime and its standard library offers core features:
-
-- Recent v8 and ECMAScript support.
-- Import ES6 modules from files & npm packages.
-- Generate YAML, JSON, HCL and text files from Javascript objects.
-- Read YAML and JSON files as Javascript objects.
-- Serialization/deserialization of js objects to/from strings.
-- Merge javascript objects.
-- [Input parameters](https://jkcfg.github.io/#/documentation/std-param).
-- [List directories and files](https://jkcfg.github.io/#/documentation/std-fs).
-- [Logging facilities](https://jkcfg.github.io/#/documentation/std-log).
-
-On top of this core feature, anyone can develop and publish libraries to
-provide user-friendly APIs for a particular piece of software. This is where
-opinions and API design discussions can be unleashed.
-
-The [`@jkcfg/kubernetes`][jk-kubernetes] library provides such a layer for
-Kubernetes. The current state is very much a work in progress but it's
-already useful:
-
-- Provides TypeScript typings generated from the [OpenAPI
-Spec][k8s-openapi-spec] (`@jkcfg/kubernetes/api`).
-- [Kustomize-like overlays][jk-k8s-overlays]
-- [Helm-like charts][jk-k8s-charts]
-
 ## Typing with TypeScript
 
 The main reason to use a general purpose language is to benefit from its
@@ -350,24 +289,15 @@ authoring time by providing context-aware auto-completion:
 ![Types - autocompletion](types-autocompletion.png)
 
 In the screenshot above we're defining a container in a `Deployment` and the
-IDE only offers the fields that are valid here along with the accompanying
-type and documentation.
+IDE only offers the fields that are valid at the cursor position along with
+the accompanying type information and documentation.
 
 Similarly, typing can provide some level of validation:
 
 ![Types - autocompletion](types-validation.png)
 
-Here, the IDE is telling us we haven't quite defined a valid `apps/v1`
+The IDE is telling us we haven't quite defined a valid `apps/v1`
 `Deployment`. We are missing the mandatory `selector` field.
-
-## Templating vs object merging
-
-## Text templating
-
-While `jk` is mainly about generating and manipulating structured
-configuration, it can certainly be used for text templating.
-
-## To code, or not to code: that is the question
 
 ## Status and Future work
 
@@ -405,6 +335,7 @@ small amount of) [`examples`][jk-examples].
 [dhall]: https://github.com/dhall-lang/dhall-lang
 [dhall-kubernetes]: https://github.com/dhall-lang/dhall-kubernetes
 [flow]: https://flow.org/
+[hcl]: https://github.com/hashicorp/hcl
 [hiera]: https://wikitech.wikimedia.org/wiki/Puppet_Hiera
 [jk]: https://github.com/jkcfg/jk
 [jk-alice]: https://github.com/jkcfg/jk/tree/master/examples/quick-start/alice
@@ -421,5 +352,6 @@ small amount of) [`examples`][jk-examples].
 [k8s-merge]: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md
 [k8s-openapi-spec]: https://github.com/kubernetes/kubernetes/tree/master/api/openapi-spec
 [prom-operator]: https://github.com/coreos/prometheus-operator
+[terraform]: https://www.terraform.io/
 [typescript]: https://www.typescriptlang.org/
 [yaml-aliases]: https://medium.com/@kinghuang/docker-compose-anchors-aliases-extensions-a1e4105d70bd
