@@ -321,6 +321,7 @@ merging][k8s-merge].
 for the Prometheus operator, ...
 - Produce **more examples**: it's easy to feel a bit overwhelmed when facing
 a new language and paradigm. More examples would make `jk` more approachable.
+- Integrate `jk` in [Kapitan][kapitan].
 
 ## Try it yourself!
 
@@ -352,6 +353,7 @@ small amount of) [examples][jk-examples].
 [k8s-declarative]: https://github.com/kubernetes/community/blob/master/contributors/design-proposals/architecture/declarative-application-management.md
 [k8s-merge]: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md
 [k8s-openapi-spec]: https://github.com/kubernetes/kubernetes/tree/master/api/openapi-spec
+[kapitan]: https://github.com/deepmind/kapitan
 [prom-operator]: https://github.com/coreos/prometheus-operator
 [terraform]: https://www.terraform.io/
 [typescript]: https://www.typescriptlang.org/
